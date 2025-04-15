@@ -1,0 +1,21 @@
+services:
+  postgres-auth:
+    image: postgres:17.4
+    container_name: postgres_container
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Leo@2356
+      POSTGRES_DB: auth_db
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres-auth-data:/var/lib/postgresql/data
+    networks:
+      - auth-network
+
+volumes:
+  postgres-auth-data:
+
+networks:
+  auth-network:
+    driver: bridge
