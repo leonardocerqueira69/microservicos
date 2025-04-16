@@ -1,34 +1,48 @@
 package com.microservices.services;
 
+import com.microservices.dto.RegisterRequest;
 import com.microservices.entities.AuthUser;
 import com.microservices.repositories.AuthUserRepository;
 
 import lombok.RequiredArgsConstructor;
+
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
 
     private final AuthUserRepository authUserRepository;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     public Optional<AuthUser> authenticate(String email, String password) {
         Optional<AuthUser> user = authUserRepository.findByEmail(email);
 
-        // DEBUG: ajuda a verificar o que está acontecendo
-        System.out.println("Email recebido: " + email);
-        System.out.println("Senha recebida: " + password);
-        System.out.println("Usuário encontrado? " + user.isPresent());
-
         if (user.isPresent()) {
-            System.out.println("Senha no banco: " + user.get().getPassword());
-            if (user.get().getPassword().equals(password)) {
+            if (passwordEncoder.matches(password, user.get().getPassword())) {
                 return user;
             }
         }
 
         return Optional.empty();
+    }
+
+    public AuthUser register(RegisterRequest registerRequest){
+        if (authUserRepository.findByEmail(registerRequest.email()).isPresent()) {
+            throw new RuntimeException("Essse email já foi cadastrado");
+        }
+
+        AuthUser authUser = new AuthUser();
+        authUser.setUserId(UUID.randomUUID().toString());
+        authUser.setName(registerRequest.name());
+        authUser.setEmail(registerRequest.email());
+        authUser.setPassword(passwordEncoder.encode(registerRequest.password()));
+        authUser.setRole(registerRequest.role());
+
+        return authUserRepository.save(authUser);
     }
 }
