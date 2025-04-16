@@ -1,3 +1,3 @@
 package com.microservices.dto;
 
-public record LoginResponse(String token) {}
+public record LoginResponse(String token, String name) {}
