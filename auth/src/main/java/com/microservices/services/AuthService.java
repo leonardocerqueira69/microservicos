@@ -31,18 +31,18 @@ public class AuthService {
         return Optional.empty();
     }
 
-    public AuthUser register(RegisterRequest registerRequest){
-        if (authUserRepository.findByEmail(registerRequest.email()).isPresent()) {
-            throw new RuntimeException("Essse email já foi cadastrado");
+        public AuthUser register(RegisterRequest registerRequest){
+            if (authUserRepository.findByEmail(registerRequest.email()).isPresent()) {
+                throw new RuntimeException("Essse email já foi cadastrado");
+            }
+
+            AuthUser authUser = new AuthUser();
+            authUser.setUserId(UUID.randomUUID().toString());
+            authUser.setName(registerRequest.name());
+            authUser.setEmail(registerRequest.email());
+            authUser.setPassword(passwordEncoder.encode(registerRequest.password()));
+            authUser.setRole(registerRequest.role());
+
+            return authUserRepository.save(authUser);
         }
-
-        AuthUser authUser = new AuthUser();
-        authUser.setUserId(UUID.randomUUID().toString());
-        authUser.setName(registerRequest.name());
-        authUser.setEmail(registerRequest.email());
-        authUser.setPassword(passwordEncoder.encode(registerRequest.password()));
-        authUser.setRole(registerRequest.role());
-
-        return authUserRepository.save(authUser);
-    }
 }

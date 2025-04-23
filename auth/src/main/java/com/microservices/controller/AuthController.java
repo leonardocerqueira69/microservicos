@@ -3,6 +3,7 @@ package com.microservices.controller;
 import com.microservices.dto.LoginRequest;
 import com.microservices.dto.LoginResponse;
 import com.microservices.dto.RegisterRequest;
+import com.microservices.dto.RegisterResponse;
 import com.microservices.entities.AuthUser;
 import com.microservices.security.JwtService;
 import com.microservices.services.AuthService;
@@ -30,14 +31,15 @@ public class AuthController {
         return ResponseEntity.ok(new LoginResponse(token, user.get().getName()));
     }
 
-    
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        try {
-            AuthUser user = authService.register(request);
-            return ResponseEntity.ok("Usuário cadastrado com sucesso: " + user.getEmail());
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<RegisterResponse> register(@RequestBody RegisterRequest registerRequest) {
+        AuthUser registeredUser = authService.register(registerRequest);
+        RegisterResponse response = new RegisterResponse(
+                registeredUser.getName(),
+                registeredUser.getEmail()
+        );
+        return ResponseEntity.status(201).body(response);
     }
+    
 }
+
