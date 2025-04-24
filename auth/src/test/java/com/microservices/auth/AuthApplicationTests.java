@@ -35,41 +35,59 @@ class AuthApplicationTests {
     @LocalServerPort
     private int port;
 
-    @BeforeEach
+    @BeforeEach 
     void setup() {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = port;
     }
 
     @Test
-    void shouldRegisterAndAuthenticateUser() {
+    void shouldRegisterUserSuccessfully() {
         String registerBody = """
                 {
-                    "name": "Leo Test",
-                    "email": "leo@test.com",
-                    "password": "123456",
+                    "name": "Leo",
+                    "email": "leo@leo.com",
+                    "password": "2810",
                     "role": "USER"
                 }
                 """;
-
-        // Testa o registro
         given()
             .contentType("application/json")
             .body(registerBody)
         .when()
             .post("/auth/register")
         .then()
-            .statusCode(200)
-            .body(containsString("Usuário cadastrado com sucesso"));
+            .statusCode(201)
+            .body("name", equalTo("Leo"))
+            .body("email", equalTo("leo@leo.com"));    
+        
+    }
 
-        String loginBody = """
+    @Test
+    void shouldLoginUserSuccessfully() {
+        String registerBody = """
                 {
-                    "email": "leo@test.com",
-                    "password": "123456"
+                    "name": "Leo",
+                    "email": "leo@leo.com",
+                    "password": "2810",
+                    "role": "USER"
                 }
                 """;
+        given()
+            .contentType("application/json")
+            .body(registerBody)
+        .when()
+            .post("/auth/register")
+        .then()
+            .statusCode(201);
 
-        // Testa o login
+    
+        String loginBody = """
+                {
+                    "email": "leo@leo.com",
+                    "password": "2810"
+                }   
+                """;
         given()
             .contentType("application/json")
             .body(loginBody)
@@ -78,6 +96,8 @@ class AuthApplicationTests {
         .then()
             .statusCode(200)
             .body("token", notNullValue())
-            .body("name", equalTo("Leo Test"));
+            .body("email", equalTo("leo@leo.com"));
+            
     }
+
 }
