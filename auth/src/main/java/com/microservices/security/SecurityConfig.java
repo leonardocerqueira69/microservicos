@@ -20,7 +20,7 @@ public class SecurityConfig {
         return http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/login", "/auth/register").permitAll() // libera login e register
+                .requestMatchers("/auth/login", "/auth/register", "/auth/users").permitAll() // libera login e register
                 .anyRequest().authenticated()
             )
             .build();

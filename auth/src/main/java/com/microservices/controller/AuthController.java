@@ -8,6 +8,9 @@ import com.microservices.entities.AuthUser;
 import com.microservices.security.JwtService;
 import com.microservices.services.AuthService;
 import lombok.RequiredArgsConstructor;
+
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -41,5 +44,10 @@ public class AuthController {
         return ResponseEntity.status(201).body(response);
     }
     
+    @GetMapping("/users")
+    public ResponseEntity<List<AuthUser>> getAllUsers() {
+        List<AuthUser> users = authService.getAllUsers();
+        return ResponseEntity.ok(users);
+    }
 }
 
